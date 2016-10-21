@@ -1,0 +1,12 @@
+package render
+
+type buffer struct {
+	width int
+	height int
+	buffer []byte
+}
+
+func NewBuffer(width int, height int) {
+	return &buffer{ width, height, make( []byte, width*height*4 ) }
+}
+

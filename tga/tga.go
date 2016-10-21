@@ -1,6 +1,6 @@
 package tga
 
-func CreateTga(w uint16, h uint16, pixels []byte) []byte {
+func CreateTga(w int, h int, pixels []byte) []byte {
 
 	// TGA FORMAT
 	// no ID size: 0x00 
