@@ -33,8 +33,9 @@ func (this *RenderTarget) Draw(tri Tri) {
 	for y:=t0.Y; y<t1.Y; y++ {
 		x0 := t0.X + int(fx0)
 		x1 := t0.X + int(fx1)
-		this.buffer.Write(x0,y,tri.Colour)
-		this.buffer.Write(x1,y,tri.Colour)
+		for x:=x0; x<=x1; x++ {
+			this.buffer.Write(x,y,tri.Colour)	
+		}
 		fx0 += slope0
 		fx1 += slope1
 	}
@@ -44,8 +45,9 @@ func (this *RenderTarget) Draw(tri Tri) {
 	for y:=t1.Y; y<=t2.Y; y++ {
 		x0 := t1.X + int(fx0)
 		x1 := t0.X + int(fx1)
-		this.buffer.Write(x0,y,tri.Colour)
-		this.buffer.Write(x1,y,tri.Colour)
+		for x:=x0; x<=x1; x++ {
+			this.buffer.Write(x,y,tri.Colour)	
+		}
 		fx0 += slope2
 		fx1 += slope1
 	}

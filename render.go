@@ -18,7 +18,7 @@ func main() {
 	tri := gfx.NewTri(
 			   vector.V2{10,0}, 
 			   vector.V2{0,10}, 
-			   vector.V2{19,19}, 
+			   vector.V2{20,10}, 
 			   gfx.Colour{0xFF, 0x00, 0xFF, 0xFF})
 
 	buffer.Write( 0, 0, gfx.Colour{ 0xFF, 0x00, 0x00, 0xFF } )
