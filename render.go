@@ -10,8 +10,8 @@ import (
 
 func main() {
 
-	width := 20
-	height := 20
+	width := 640
+	height := 480
 
 	buffer := gfx.NewBuffer(width,height)
 

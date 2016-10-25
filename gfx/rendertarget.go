@@ -62,8 +62,8 @@ func (a ByY) Less(i, j int) bool { return a[i].Y < a[j].Y }
 
 func (this *RenderTarget) Fill(colour Colour) {
 	size := this.buffer.Size()
-	for y := 0; y<=size.X; y++ {
-		for x := 0; x<=size.Y; x++ {
+	for y := 0; y<=size.Y; y++ {
+		for x := 0; x<=size.X; x++ {
 			this.buffer.Write(x,y,colour)
 		}
 	}
