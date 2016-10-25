@@ -5,3 +5,6 @@ type V2 struct {
 	Y int
 }
 
+type V3f struct {
+	X, Y, Z float64
+}

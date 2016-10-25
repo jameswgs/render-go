@@ -3,6 +3,8 @@ package gfx
 import ( 
 	"rendergo/vector"
 	"sort"
+	"rendergo/obj"
+	"math/rand"
 )
 
 type RenderTarget struct {
@@ -13,7 +15,7 @@ func NewRenderTarget(buffer *Buffer) *RenderTarget {
 	return &RenderTarget{buffer}
 }
 
-func (this *RenderTarget) Draw(tri Tri) {
+func (this *RenderTarget) DrawTri(tri Tri) {
 
 	tris := []vector.V2 { tri.A, tri.B, tri.C }
 
@@ -75,4 +77,20 @@ func Max(a int, b int) int {
 
 func Min(a int, b int) int {
 	if a < b { return a } else { return b }
+}
+
+func (this *RenderTarget) DrawObject(object *obj.Object) {
+	for _, f := range object.Faces {
+		vA := object.Verts[f.A]
+		vB := object.Verts[f.B]
+		vC := object.Verts[f.C]
+
+		tri := NewTri(
+			   vector.V2{int(vA.X),int(vA.Y)}, 
+			   vector.V2{int(vB.X),int(vB.Y)}, 
+			   vector.V2{int(vC.X),int(vC.Y)}, 
+			   Colour{ byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), 0xFF } )
+
+		this.DrawTri(tri)
+	}
 }

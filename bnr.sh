@@ -1,1 +1,1 @@
-go build render.go; ./render
+rm render; go build render.go; ./render
