@@ -1,5 +1,9 @@
 package gfx
 
+import (
+	"rendergo/vector"
+)
+
 type Buffer struct {
 	width int
 	height int
@@ -22,4 +26,8 @@ func (this *Buffer) Write(x int, y int, color Colour) {
 
 func (this *Buffer) Pixels() []byte {
 	return this.buffer
+}
+
+func (this *Buffer) Size() *vector.Size2 {
+	return &vector.Size2{this.width, this.height}
 }

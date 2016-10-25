@@ -15,9 +15,10 @@ func main() {
 
 	buffer := gfx.NewBuffer(width,height)
 
-	tri := gfx.NewTri(vector.V2{0,0}, 
+	tri := gfx.NewTri(
 			   vector.V2{10,0}, 
-			   vector.V2{10,10}, 
+			   vector.V2{0,10}, 
+			   vector.V2{19,19}, 
 			   gfx.Colour{0xFF, 0x00, 0xFF, 0xFF})
 
 	buffer.Write( 0, 0, gfx.Colour{ 0xFF, 0x00, 0x00, 0xFF } )
@@ -27,7 +28,10 @@ func main() {
 
 	target := gfx.NewRenderTarget(buffer)
 
+	target.Fill(gfx.Colour{0x00, 0x00, 0x00, 0xFF})
+
 	target.Draw(tri)
+
 
 	tgaBytes := tga.CreateTga(width, height, buffer.Pixels() )
 

@@ -1,5 +1,10 @@
 package gfx
 
+import ( 
+	"rendergo/vector"
+	"sort"
+)
+
 type RenderTarget struct {
 	buffer *Buffer
 }
@@ -9,26 +14,57 @@ func NewRenderTarget(buffer *Buffer) *RenderTarget {
 }
 
 func (this *RenderTarget) Draw(tri Tri) {
-	minX := Min(tri.A.X, Min(tri.B.X, tri.C.X))
-	minY := Min(tri.A.Y, Min(tri.B.Y, tri.C.Y))
-	maxX := Max(tri.A.X, Max(tri.B.X, tri.C.X))
-	maxY := Max(tri.A.Y, Max(tri.B.Y, tri.C.Y))
 
-	for y := minY; y<=maxY; y++ {
-		for x := minX; x<=maxX; x++ {
-			if(Contains(tri,x,y)) {
-				buffer.Write(x,y,tri.Colour)
-			}
-		}
+	tris := []vector.V2 { tri.A, tri.B, tri.C }
+
+	sort.Sort(ByY(tris))
+
+	t0 := tris[0]
+	t1 := tris[1]
+	t2 := tris[2]
+
+	slope0 := float64(t0.X-t1.X)/float64(t0.Y-t1.Y)
+	slope1 := float64(t2.X-t0.X)/float64(t2.Y-t0.Y)
+	slope2 := float64(t2.X-t1.X)/float64(t2.Y-t1.Y)
+
+	fx0 := 0.0
+	fx1 := 0.0
+
+	for y:=t0.Y; y<t1.Y; y++ {
+		x0 := t0.X + int(fx0)
+		x1 := t0.X + int(fx1)
+		this.buffer.Write(x0,y,tri.Colour)
+		this.buffer.Write(x1,y,tri.Colour)
+		fx0 += slope0
+		fx1 += slope1
 	}
+
+	fx0 = 0.0
+
+	for y:=t1.Y; y<=t2.Y; y++ {
+		x0 := t1.X + int(fx0)
+		x1 := t0.X + int(fx1)
+		this.buffer.Write(x0,y,tri.Colour)
+		this.buffer.Write(x1,y,tri.Colour)
+		fx0 += slope2
+		fx1 += slope1
+	}
+
 }
 
-func Contains(tri Tri, int x, int y) bool {
-	// find slope of a to (xy) = sap
-	// find slope of a to b = sab
-	// find slope of a to c = sac
-	// return no if sap is not between sab and sac
-	
+type ByY []vector.V2
+
+func (a ByY) Len() int           { return len(a) }
+func (a ByY) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByY) Less(i, j int) bool { return a[i].Y < a[j].Y }
+
+func (this *RenderTarget) Fill(colour Colour) {
+	size := this.buffer.Size()
+	for y := 0; y<=size.X; y++ {
+		for x := 0; x<=size.Y; x++ {
+			this.buffer.Write(x,y,colour)
+		}
+	}
 }
 
 func Max(a int, b int) int {
