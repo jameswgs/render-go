@@ -4,7 +4,6 @@ import (
 	"rendergo/vector"
 	"sort"
 	"rendergo/obj"
-	"math/rand"
 )
 
 type RenderTarget struct {
@@ -80,16 +79,27 @@ func Min(a int, b int) int {
 }
 
 func (this *RenderTarget) DrawObject(object *obj.Object) {
+
+	xscale := float64(this.buffer.Size().X)
+	yscale := float64(this.buffer.Size().Y)
+
 	for _, f := range object.Faces {
+
+		println(len(object.Verts), f.A, f.B, f.C)
+
 		vA := object.Verts[f.A]
 		vB := object.Verts[f.B]
 		vC := object.Verts[f.C]
 
-		tri := NewTri(
-			   vector.V2{int(vA.X),int(vA.Y)}, 
-			   vector.V2{int(vB.X),int(vB.Y)}, 
-			   vector.V2{int(vC.X),int(vC.Y)}, 
-			   Colour{ byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), 0xFF } )
+		v0 := vector.V2{int(vA.X*xscale),int(vA.Y*yscale)}
+		v1 := vector.V2{int(vB.X*xscale),int(vB.Y*yscale)} 
+		v2 := vector.V2{int(vC.X*xscale),int(vC.Y*yscale)}
+
+		println("[",v0.X,v0.Y,"] [",v1.X,v1.Y,"] [",v2.X,v2.Y,"]")
+
+		col := Colour{0xFF, 0x00, 0xFF, 0xFF} // Colour{ byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), 0xFF } 
+
+		tri := NewTri(v0, v1, v2, col)
 
 		this.DrawTri(tri)
 	}

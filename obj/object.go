@@ -1,6 +1,8 @@
 package obj
 
 import (
+	"os"
+	"io"
 	"bufio"
 	"net/http"
 	"strings"
@@ -17,18 +19,35 @@ type Object struct {
 	Faces []Face
 }
 
-func LoadObj(url string) *Object {
+func LoadObjFronUrl(url string) *Object {
 	response, err := http.Get(url)
 
 	if err != nil {
 		panic(err)
 	}
 
+	defer response.Body.Close()
+	return LoadObjFromReader(response.Body)	
+}
+
+func LoadObjFronFile(fileName string) *Object {
+	file, err := os.Open(fileName)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+	return LoadObjFromReader(file)	
+}
+
+func LoadObjFromReader(reader io.Reader) *Object {
+
+	scanner := bufio.NewScanner(reader)
+
 	verts := make([]vector.V3f, 0)
 	faces := make([]Face, 0)
 
-	defer response.Body.Close()
-	scanner := bufio.NewScanner(response.Body)
 	for scanner.Scan() {
 		line := scanner.Text()
 		parts := strings.Split(line, " ")
@@ -44,14 +63,13 @@ func LoadObj(url string) *Object {
 			a, _ := strconv.Atoi(strings.Split(parts[1],"/")[0])
 			b, _ := strconv.Atoi(strings.Split(parts[2],"/")[0])
 			c, _ := strconv.Atoi(strings.Split(parts[3],"/")[0])
-			face := Face{ a, b, c }
+			face := Face{ a-1, b-1, c-1 }
 			faces = append(faces, face)
 			break;
 		}
 	}
 
 	return &Object{verts, faces}
-
 }
 
 //"https://raw.githubusercontent.com/ssloy/tinyrenderer/master/obj/african_head/african_head.obj"

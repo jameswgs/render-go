@@ -25,9 +25,15 @@ func main() {
 			   vector.V2{20,10}, 
 			   gfx.Colour{0xFF, 0x00, 0xFF, 0xFF}))
 
+	// target.DrawTri(gfx.NewTri(
+	// 		   vector.V2{74, 131}, 
+	// 		   vector.V2{77, 130}, 
+	// 		   vector.V2{77, 128},
+	// 		   gfx.Colour{0xFF, 0x00, 0xFF, 0xFF}))
+
 	tgaBytes := tga.CreateTga(width, height, buffer.Pixels() )
 
-	object := obj.LoadObj("https://raw.githubusercontent.com/ssloy/tinyrenderer/master/obj/african_head/african_head.obj")
+	object := obj.LoadObjFronFile("dat/african_head.obj")
 
 	target.DrawObject(object)
 
