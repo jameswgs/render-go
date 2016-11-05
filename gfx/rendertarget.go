@@ -80,20 +80,24 @@ func Min(a int, b int) int {
 
 func (this *RenderTarget) DrawObject(object *obj.Object) {
 
-	xscale := float64(this.buffer.Size().X)
-	yscale := float64(this.buffer.Size().Y)
+	hw := this.buffer.Size().X/2
+	hh := this.buffer.Size().Y/2
+
+	xscale := float64(hw)
+	yscale := float64(hh)
+
+	xoffset := hw
+	yoffset := hh
 
 	for _, f := range object.Faces {
-
-		println(len(object.Verts), f.A, f.B, f.C)
 
 		vA := object.Verts[f.A]
 		vB := object.Verts[f.B]
 		vC := object.Verts[f.C]
 
-		v0 := vector.V2{int(vA.X*xscale),int(vA.Y*yscale)}
-		v1 := vector.V2{int(vB.X*xscale),int(vB.Y*yscale)} 
-		v2 := vector.V2{int(vC.X*xscale),int(vC.Y*yscale)}
+		v0 := vector.V2{int(vA.X*xscale)+xoffset,int(vA.Y*yscale)+yoffset}
+		v1 := vector.V2{int(vB.X*xscale)+xoffset,int(vB.Y*yscale)+yoffset} 
+		v2 := vector.V2{int(vC.X*xscale)+xoffset,int(vC.Y*yscale)+yoffset}
 
 		println("[",v0.X,v0.Y,"] [",v1.X,v1.Y,"] [",v2.X,v2.Y,"]")
 
