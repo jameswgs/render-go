@@ -5,6 +5,7 @@ import (
     "io/ioutil"
     "rendergo/tga"
     "rendergo/gfx"
+//    "rendergo/vector"
     "rendergo/obj"
 )
 
@@ -21,6 +22,12 @@ func main() {
 	object := obj.LoadObjFronFile("dat/african_head.obj")
 
 	target.DrawObject(object)
+
+	// target.DrawTri(
+	// 	gfx.NewTri(
+	// 		//vector.V2{275, 200}, vector.V2{297, 188}, vector.V2{280, 213}, 
+	// 		vector.V2{363, 205}, vector.V2{362, 209}, vector.V2{367, 208},
+	// 		gfx.Colour{0xFF, 0xFF, 0xFF, 0xFF}))
 
 	tgaBytes := tga.CreateTga(width, height, buffer.Pixels() )
 	err := ioutil.WriteFile("img.tga", tgaBytes, 0644)

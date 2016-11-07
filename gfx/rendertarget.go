@@ -3,6 +3,7 @@ package gfx
 import ( 
 	"rendergo/vector"
 	"sort"
+	"fmt"
 	"rendergo/obj"
 )
 
@@ -31,10 +32,14 @@ func (this *RenderTarget) DrawTri(tri Tri) {
 	fx0 := 0.0
 	fx1 := 0.0
 
+	println("Y", t0.Y, t1.Y)
+
 	for y:=t0.Y; y<t1.Y; y++ {
 		x0 := t0.X + int(fx0)
 		x1 := t0.X + int(fx1)
-		for x:=x0; x<=x1; x++ {
+		adder := 1
+		if(x0>x1) { adder = -1 }
+		for x:=x0; x!=(x1+adder); x+=adder {
 			this.buffer.Write(x,y,tri.Colour)	
 		}
 		fx0 += slope0
@@ -46,12 +51,18 @@ func (this *RenderTarget) DrawTri(tri Tri) {
 	for y:=t1.Y; y<=t2.Y; y++ {
 		x0 := t1.X + int(fx0)
 		x1 := t0.X + int(fx1)
-		for x:=x0; x<=x1; x++ {
+		adder := 1
+		if(x0>x1) { adder = -1 }
+		for x:=x0; x!=(x1+adder); x+=adder {
 			this.buffer.Write(x,y,tri.Colour)	
 		}
 		fx0 += slope2
 		fx1 += slope1
 	}
+
+	this.buffer.Write(t0.X,t0.Y,Colour{0xFF,0x00,0x00,0xFF});
+	this.buffer.Write(t1.X,t1.Y,Colour{0x00,0xFF,0x00,0xFF});
+	this.buffer.Write(t2.X,t2.Y,Colour{0x00,0x00,0xFF,0xFF});
 
 }
 
@@ -99,9 +110,9 @@ func (this *RenderTarget) DrawObject(object *obj.Object) {
 		v1 := vector.V2{int(vB.X*xscale)+xoffset,int(vB.Y*yscale)+yoffset} 
 		v2 := vector.V2{int(vC.X*xscale)+xoffset,int(vC.Y*yscale)+yoffset}
 
-		println("[",v0.X,v0.Y,"] [",v1.X,v1.Y,"] [",v2.X,v2.Y,"]")
+		fmt.Printf("vector.V2{%d, %d}, vector.V2{%d, %d}, vector.V2{%d, %d}\n", v0.X, v0.Y, v1.X, v1.Y, v2.X, v2.Y)
 
-		col := Colour{0xFF, 0x00, 0xFF, 0xFF} // Colour{ byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), 0xFF } 
+		col := Colour{0xFF, 0xFF, 0xFF, 0xFF} // Colour{ byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), 0xFF } 
 
 		tri := NewTri(v0, v1, v2, col)
 
