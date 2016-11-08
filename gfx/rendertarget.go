@@ -29,41 +29,31 @@ func (this *RenderTarget) DrawTri(tri Tri) {
 	slope1 := float64(t2.X-t0.X)/float64(t2.Y-t0.Y)
 	slope2 := float64(t2.X-t1.X)/float64(t2.Y-t1.Y)
 
-	fx0 := 0.0
-	fx1 := 0.0
+	fx1 := this.DrawTriPart(t0.Y, t1.Y, t0.X, t0.X, tri.Colour, 0.0, 0.0, slope0, slope1)
 
-	println("Y", t0.Y, t1.Y)
-
-	for y:=t0.Y; y<t1.Y; y++ {
-		x0 := t0.X + int(fx0)
-		x1 := t0.X + int(fx1)
-		adder := 1
-		if(x0>x1) { adder = -1 }
-		for x:=x0; x!=(x1+adder); x+=adder {
-			this.buffer.Write(x,y,tri.Colour)	
-		}
-		fx0 += slope0
-		fx1 += slope1
-	}
-
-	fx0 = 0.0
-
-	for y:=t1.Y; y<=t2.Y; y++ {
-		x0 := t1.X + int(fx0)
-		x1 := t0.X + int(fx1)
-		adder := 1
-		if(x0>x1) { adder = -1 }
-		for x:=x0; x!=(x1+adder); x+=adder {
-			this.buffer.Write(x,y,tri.Colour)	
-		}
-		fx0 += slope2
-		fx1 += slope1
-	}
+	this.DrawTriPart(t1.Y, t2.Y, t1.X, t0.X, tri.Colour, 0.0, fx1, slope2, slope1)
 
 	this.buffer.Write(t0.X,t0.Y,Colour{0xFF,0x00,0x00,0xFF});
 	this.buffer.Write(t1.X,t1.Y,Colour{0x00,0xFF,0x00,0xFF});
 	this.buffer.Write(t2.X,t2.Y,Colour{0x00,0x00,0xFF,0xFF});
 
+}
+
+func (this *RenderTarget) DrawTriPart(startY int, endY int, offsetX0 int, offsetX1 int, colour Colour, fx0 float64, fx1 float64, s0 float64, s1 float64) float64 {
+
+	for y:=startY; y<endY; y++ {
+		x0 := offsetX0 + int(fx0)
+		x1 := offsetX1 + int(fx1)
+		adder := 1
+		if(x0>x1) { adder = -1 }
+		for x:=x0; x!=(x1+adder); x+=adder {
+			this.buffer.Write(x,y,colour)	
+		}
+		fx0 += s0
+		fx1 += s1
+	}
+
+	return fx1
 }
 
 type ByY []vector.V2
