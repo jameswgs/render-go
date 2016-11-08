@@ -3,7 +3,6 @@ package gfx
 import ( 
 	"rendergo/vector"
 	"sort"
-	"fmt"
 	"rendergo/obj"
 )
 
@@ -17,25 +16,21 @@ func NewRenderTarget(buffer *Buffer) *RenderTarget {
 
 func (this *RenderTarget) DrawTri(tri Tri) {
 
-	tris := []vector.V2 { tri.A, tri.B, tri.C }
+	verts := []vector.V2 { tri.A, tri.B, tri.C }
 
-	sort.Sort(ByY(tris))
+	sort.Sort(ByY(verts))
 
-	t0 := tris[0]
-	t1 := tris[1]
-	t2 := tris[2]
+	v0 := verts[0]
+	v1 := verts[1]
+	v2 := verts[2]
 
-	slope0 := float64(t0.X-t1.X)/float64(t0.Y-t1.Y)
-	slope1 := float64(t2.X-t0.X)/float64(t2.Y-t0.Y)
-	slope2 := float64(t2.X-t1.X)/float64(t2.Y-t1.Y)
+	slope0 := float64(v0.X-v1.X)/float64(v0.Y-v1.Y)
+	slope1 := float64(v2.X-v0.X)/float64(v2.Y-v0.Y)
+	slope2 := float64(v2.X-v1.X)/float64(v2.Y-v1.Y)
 
-	fx1 := this.DrawTriPart(t0.Y, t1.Y, t0.X, t0.X, tri.Colour, 0.0, 0.0, slope0, slope1)
+	fx1 := this.DrawTriPart(v0.Y, v1.Y, v0.X, v0.X, tri.Colour, 0.0, 0.0, slope0, slope1)
 
-	this.DrawTriPart(t1.Y, t2.Y, t1.X, t0.X, tri.Colour, 0.0, fx1, slope2, slope1)
-
-	this.buffer.Write(t0.X,t0.Y,Colour{0xFF,0x00,0x00,0xFF});
-	this.buffer.Write(t1.X,t1.Y,Colour{0x00,0xFF,0x00,0xFF});
-	this.buffer.Write(t2.X,t2.Y,Colour{0x00,0x00,0xFF,0xFF});
+	this.DrawTriPart(v1.Y, v2.Y, v1.X, v0.X, tri.Colour, 0.0, fx1, slope2, slope1)
 
 }
 
@@ -100,12 +95,23 @@ func (this *RenderTarget) DrawObject(object *obj.Object) {
 		v1 := vector.V2{int(vB.X*xscale)+xoffset,int(vB.Y*yscale)+yoffset} 
 		v2 := vector.V2{int(vC.X*xscale)+xoffset,int(vC.Y*yscale)+yoffset}
 
-		fmt.Printf("vector.V2{%d, %d}, vector.V2{%d, %d}, vector.V2{%d, %d}\n", v0.X, v0.Y, v1.X, v1.Y, v2.X, v2.Y)
+		//col := Colour{ byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), 0xFF } 
 
-		col := Colour{0xFF, 0xFF, 0xFF, 0xFF} // Colour{ byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), 0xFF } 
+		normal := vB.Sub(vA).Cross(vC.Sub(vA)).Normalised()
+
+		col := Colour{ toColElement(normal.X), toColElement(normal.Y), toColElement(normal.Z), 0xFF }
 
 		tri := NewTri(v0, v1, v2, col)
 
 		this.DrawTri(tri)
 	}
 }
+
+func toColElement(a float64) byte {
+	b := int(a * 255.0)
+	if(b>255) { b=255 }
+	if(b<0) { b=0 }
+	return byte(b)
+}
+
+
