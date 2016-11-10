@@ -14,7 +14,7 @@ type V3f struct {
 }
 
 func (this V3f) Sub(other V3f) V3f {
-	return V3f{ this.X-other.X, this.Y-other.Y, this.Z-other.X }
+	return V3f{ this.X-other.X, this.Y-other.Y, this.Z-other.Z }
 }
 
 func (this V3f) Cross(other V3f) V3f {

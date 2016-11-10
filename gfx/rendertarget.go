@@ -7,11 +7,12 @@ import (
 )
 
 type RenderTarget struct {
-	buffer *Buffer
+	buffer *ColourBuffer
+	zbuffer *ZBuffer
 }
 
-func NewRenderTarget(buffer *Buffer) *RenderTarget {
-	return &RenderTarget{buffer}
+func NewRenderTarget(buffer *ColourBuffer, zbuffer *ZBuffer) *RenderTarget {
+	return &RenderTarget{buffer, zbuffer}
 }
 
 func (this *RenderTarget) DrawTri(tri Tri) {
@@ -95,15 +96,20 @@ func (this *RenderTarget) DrawObject(object *obj.Object) {
 		v1 := vector.V2{int(vB.X*xscale)+xoffset,int(vB.Y*yscale)+yoffset} 
 		v2 := vector.V2{int(vC.X*xscale)+xoffset,int(vC.Y*yscale)+yoffset}
 
-		//col := Colour{ byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), byte(rand.Intn(0x100)), 0xFF } 
+		vAB := vB.Sub(vA)
+		vAC := vC.Sub(vA)
+		normal := vAB.Cross(vAC).Normalised()
 
-		normal := vB.Sub(vA).Cross(vC.Sub(vA)).Normalised()
+		r := toColElement(normal.X)
+		g := toColElement(normal.Y)
+		b := toColElement(normal.Z)
 
-		col := Colour{ toColElement(normal.X), toColElement(normal.Y), toColElement(normal.Z), 0xFF }
+		if(normal.Z > 0.0) {
+			col := Colour{ r, g, b, 0xFF }
+			tri := NewTri(v0, v1, v2, col)
+			this.DrawTri(tri)
+		}
 
-		tri := NewTri(v0, v1, v2, col)
-
-		this.DrawTri(tri)
 	}
 }
 
@@ -112,6 +118,10 @@ func toColElement(a float64) byte {
 	if(b>255) { b=255 }
 	if(b<0) { b=0 }
 	return byte(b)
+}
+
+func (this *RenderTarget) ClearZ() {
+	this.zbuffer.Clear(1000.0)
 }
 
 
