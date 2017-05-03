@@ -81,7 +81,7 @@ func (this *RenderTarget) DrawObject(object *obj.Object) {
 	hh := this.buffer.Size().Y/2
 
 	xscale := float64(hw)
-	yscale := float64(hh)
+	yscale := float64(-hh)
 
 	xoffset := hw
 	yoffset := hh
@@ -107,7 +107,22 @@ func (this *RenderTarget) DrawObject(object *obj.Object) {
 		if(normal.Z > 0.0) {
 			col := Colour{ r, g, b, 0xFF }
 			tri := NewTri(v0, v1, v2, col)
-			this.DrawTri(tri)
+			verts := []vector.V2 { tri.A, tri.B, tri.C }
+
+			sort.Sort(ByY(verts))
+
+			v0 := verts[0]
+			v1 := verts[1]
+			v2 := verts[2]
+
+			slope0 := float64(v0.X-v1.X)/float64(v0.Y-v1.Y)
+			slope1 := float64(v2.X-v0.X)/float64(v2.Y-v0.Y)
+			slope2 := float64(v2.X-v1.X)/float64(v2.Y-v1.Y)
+
+			fx1 := this.DrawTriPart(v0.Y, v1.Y, v0.X, v0.X, tri.Colour, 0.0, 0.0, slope0, slope1)
+
+			this.DrawTriPart(v1.Y, v2.Y, v1.X, v0.X, tri.Colour, 0.0, fx1, slope2, slope1)
+
 		}
 
 	}
